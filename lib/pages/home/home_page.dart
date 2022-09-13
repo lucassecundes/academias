@@ -1,7 +1,6 @@
 import 'package:academias/pages/home/home_widgets/home_appbar.dart';
+import 'package:academias/pages/home/home_widgets/home_drawer.dart';
 import 'package:flutter/material.dart';
-
-import '../../shared/constants/custom_colors.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,12 +19,17 @@ class _HomePageState extends State<HomePage> {
         gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [const Color(0xFF0B2345), const Color(0xFF0E1621)]),
+            colors: [
+              Color(0xFF0B2345),
+              Color.fromARGB(255, 18, 28, 44),
+              Color(0xFF0E1621),
+              Color(0xFF0E1621)
+            ]),
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: getHomeAppBar(),
-        drawer: Drawer(),
+        drawer: getHomeDrawer(),
         body: Container(),
       ),
     );

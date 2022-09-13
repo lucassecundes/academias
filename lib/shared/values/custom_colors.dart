@@ -6,6 +6,7 @@ class CustomColors {
   final Color _gradientTopColor = const Color(0xFF0B2345);
   final Color _gradientBottomColor = const Color(0xFF0E1621);
   final Color _gradientBluePrimary = const Color.fromARGB(255, 32, 151, 248);
+  final Color _appBarMainColor = const Color(0xFF0E1621);
 
   Color getActivePrimaryButtonColor() {
     return _activePrimaryButton;
@@ -25,5 +26,9 @@ class CustomColors {
 
   Color getGradientBluePrimary() {
     return _gradientBluePrimary;
+  }
+
+  Color getAppBarMainColor() {
+    return _appBarMainColor;
   }
 }
