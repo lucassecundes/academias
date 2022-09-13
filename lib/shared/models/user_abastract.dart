@@ -4,4 +4,5 @@ abstract class AbastractUser {
   String? mail;
   String? cpf;
   String? birthDate;
+  String? obs;
 }

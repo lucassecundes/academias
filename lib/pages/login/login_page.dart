@@ -1,14 +1,10 @@
 // import 'dart:html';
 
-import 'dart:convert';
-
 import 'package:academias/pages/sign_up/sign_up_page.dart';
 import 'package:academias/shared/constants/custom_colors.dart';
-import 'package:academias/shared/constants/preferences_keys.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../shared/models/login_model.dart';
+import 'login_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,8 +17,9 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _mailInputController = TextEditingController();
   final TextEditingController _passwordInputController =
       TextEditingController();
-
   bool continueConnecting = false;
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -62,58 +59,74 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           Form(
+              key: _formKey,
               child: Column(
-            children: [
-              const Padding(padding: EdgeInsets.only(bottom: 15)),
-              TextFormField(
-                  style: const TextStyle(
-                      color: Color.fromARGB(202, 255, 255, 255)),
-                  controller: _mailInputController,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    labelText: "E-mail",
-                    labelStyle: const TextStyle(color: Colors.white),
-                    prefixIcon: const Icon(
-                      Icons.mail_outline,
-                      color: Colors.white,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: CustomColors().getGradientBluePrimary(),
-                          width: 2),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9),
-                        borderSide:
-                            const BorderSide(color: Colors.white, width: 0.2)),
-                  )),
-              const Padding(padding: EdgeInsets.only(bottom: 15)),
-              TextFormField(
-                  style: const TextStyle(
-                      color: Color.fromARGB(202, 255, 255, 255)),
-                  controller: _passwordInputController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: "Senha",
-                    labelStyle: const TextStyle(color: Colors.white),
-                    prefixIcon: const Icon(
-                      Icons.key,
-                      color: Colors.white,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: CustomColors().getGradientBluePrimary(),
-                          width: 2),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9),
-                        borderSide:
-                            const BorderSide(color: Colors.white, width: 0.2)),
-                  ))
-            ],
-          )),
+                children: [
+                  const Padding(padding: EdgeInsets.only(bottom: 15)),
+                  TextFormField(
+                      // Criando validador de email
+                      validator: (value) {
+                        if (value.toString().length < 5) {
+                          return "Esse email parece curto demais";
+                        } else if (!value.toString().contains("@")) {
+                          return "Email não contem o @";
+                        }
+                        return null;
+                      }, // final do validador de email
+                      style: const TextStyle(
+                          color: Color.fromARGB(202, 255, 255, 255)),
+                      controller: _mailInputController,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        labelText: "E-mail",
+                        labelStyle: const TextStyle(color: Colors.white),
+                        prefixIcon: const Icon(
+                          Icons.mail_outline,
+                          color: Colors.white,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: CustomColors().getGradientBluePrimary(),
+                              width: 2),
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(9),
+                            borderSide: const BorderSide(
+                                color: Colors.white, width: 0.2)),
+                      )),
+                  const Padding(padding: EdgeInsets.only(bottom: 15)),
+                  TextFormField(
+                      validator: (value) {
+                        if (value.toString().length < 6) {
+                          return "Minimo é de 6 caracteres";
+                        }
+                        return null;
+                      },
+                      style: const TextStyle(
+                          color: Color.fromARGB(202, 255, 255, 255)),
+                      controller: _passwordInputController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: "Senha",
+                        labelStyle: const TextStyle(color: Colors.white),
+                        prefixIcon: const Icon(
+                          Icons.key,
+                          color: Colors.white,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: CustomColors().getGradientBluePrimary(),
+                              width: 2),
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(9),
+                            borderSide: const BorderSide(
+                                color: Colors.white, width: 0.2)),
+                      ))
+                ],
+              )),
           const Padding(padding: EdgeInsets.only(bottom: 10)),
           GestureDetector(
             onTap: () {},
@@ -192,26 +205,33 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _doLogin() async {
-    String mailForm = _mailInputController.text;
-    String passForm = _passwordInputController.text;
-
-    LoginModel savedUser = await _getSavedUser();
-    // print(savedUser);
-
-    if (mailForm == savedUser.mail && passForm == savedUser.password) {
-      //   print("LOGIN EFETUADO COM SUCESSO");
+    // ignore: unrelated_type_equality_checks
+    if (_formKey.currentState!.validate()) {
+      LoginService()
+          .login(_mailInputController.text, _passwordInputController.text);
     } else {
-      //  print("Login não encontrado");
+      print("invalido");
     }
   }
 
-  Future<LoginModel> _getSavedUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? jsonUser = prefs.getString(PreferencesKeys.activeUser);
-    // print(jsonUser);
+  // Future<LoginModel> _getSavedUser() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String jsonUser = prefs.getString(PreferencesKeys.activeUser);
+  //   print(jsonUser);
 
-    Map<String, dynamic> mapUser = json.decode(jsonUser.toString());
-    LoginModel user = LoginModel.fromJson(mapUser);
-    return user;
-  }
+  //   Map<String, dynamic> mapUser = json.decode(jsonUser);
+  //   LoginModel user = LoginModel.fromJson(mapUser);
+  //   return user;
+  // }
 }
+
+// WIDGETS
+// BoxDecoration
+// LinearGradient
+// MediaQuery.of(context).size.width
+// SingleChildScrollView
+// Column
+// Form
+// TextFormField
+// InputDecoration
+// GestureDectector
