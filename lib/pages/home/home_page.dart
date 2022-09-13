@@ -1,5 +1,6 @@
 import 'package:academias/pages/home/home_widgets/home_appbar.dart';
 import 'package:academias/pages/home/home_widgets/home_drawer.dart';
+import 'package:academias/pages/home/home_widgets/home_fab.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -30,6 +31,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.transparent,
         appBar: getHomeAppBar(),
         drawer: getHomeDrawer(),
+        floatingActionButton: getHomeFab(),
         body: Container(),
       ),
     );
