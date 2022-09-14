@@ -3,6 +3,8 @@ import 'package:academias/pages/home/home_widgets/home_drawer.dart';
 import 'package:academias/pages/home/home_widgets/home_fab.dart';
 import 'package:flutter/material.dart';
 
+import 'home_widgets/home_content.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -32,7 +34,7 @@ class _HomePageState extends State<HomePage> {
         appBar: getHomeAppBar(),
         drawer: getHomeDrawer(),
         floatingActionButton: getHomeFab(),
-        body: Container(),
+        body: HomePageContent(),
       ),
     );
   }
